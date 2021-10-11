@@ -10,10 +10,11 @@ import {
     TableCell
     } from '@material-ui/core';
 const columns = [
-  { id: 'Persona', label: 'Name' },
-  { id: 'Critieira', label: 'Critieira' },
+  { id: 'name', label: 'Name' },
+  { id: 'body', label: 'Critieira' },
   {id:'action', label:'Action'}
 ];
+const API = process.env.REACT_APP_API || 'http://localhost:3072';
 
 function createData(name, code, population, size) {
   const density = population / size;
@@ -34,6 +35,19 @@ export default function StickyHeadTable() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+  React.useEffect(() => {
+    if(rows.length === 0){
+    fetch(`${API}/data`)
+    .then(response => response && response.json())
+    .then(data => {
+      if(data.length){
+        data.map((record)=>{
+rows.push({id:record.id,name:record.name,body:record.body})
+        })
+      }
+    });
+  }
+  })
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
