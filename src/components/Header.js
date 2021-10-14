@@ -19,7 +19,7 @@ const Header = ({ classes }) => (
     <Toolbar>
       <Typography variant="h6" color="inherit">
         
-        <Link href={"/dashboard"} color="inherit" underline="none">
+        <Link to={"/dashboard"} color="inherit" underline="none">
         Persona Picker
         </Link>
       </Typography>

@@ -12,6 +12,7 @@ import {
 import {
   Close
 } from '@material-ui/icons';
+import UserContext from './../LoginContext';
 const API = process.env.REACT_APP_API || 'http://localhost:3072';
 
 class ConnectData extends Component {
@@ -22,7 +23,7 @@ class ConnectData extends Component {
     open: false,
     messge: ""
   };
-
+  static contextType = UserContext;
   async fetch(method, endpoint, body) {
     try {
       const response = await fetch(`${API}${endpoint}`, {
@@ -42,10 +43,12 @@ class ConnectData extends Component {
     }
   }
   saveData = async () => {
+    const { user } = this.context;
     this.setState({ loading: true })
     var response = await this.fetch('post', '/connectdata', {
       type: this.state.type,
-      body: this.state.body
+      body: this.state.body,
+      orgid: user.organization
     });
     if (response.id) {
       this.setState({ loading: false, type: "", body: "", open: true, message: "Created Connect Data successfully." })
@@ -61,10 +64,11 @@ class ConnectData extends Component {
     this.setState({ loading: false, data: (await this.fetch('get', '/connectdata')) || [] });
   }
   render() {
+    const { user } = this.context;
     const { loading } = this.state;
     return (
       <div>
-        <Typography>ConnectData Data</Typography>
+        <Typography>Connect Data</Typography>
         <Box
           component="form"
           sx={{
@@ -87,7 +91,7 @@ class ConnectData extends Component {
             onClick={() => {
               this.saveData();
             }}
-            disabled={loading}
+            disabled={loading || user.role.includes("Marketeer") || user.role.includes("Product Manager")}
             variant="contained"
           >
             {loading ? <CircularProgress /> : "Connect"}

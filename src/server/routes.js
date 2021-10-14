@@ -58,19 +58,21 @@ res.json(response);
           //userProfile.organization
           LoginRadiusSDK.roleApi.getRoleContextByUid(userProfile.Uid)
     .then(function getRoleContextByUid(response) {
-      if(response && response.Data.length){
+      var orgId = userProfile.Organizations ? userProfile.Organizations[0].Id : ""
+      if(response && response.Data.length && orgId){
+        
         const roles =
         response.Data &&
         response.Data.filter(
           ({ Context }) =>
             Context &&
-            Context === "61666857e8e9a9f8be4b1888");
+            Context === orgId);
         res.json({
           name:userProfile.FullName,
           email:userProfile.Email[0].Value,
           uid: userProfile.Uid,
           role: roles && roles[0].Roles,
-          organization:userProfile.organization
+          organization:orgId
         }) 
       }
       else {
@@ -154,14 +156,23 @@ res.json(response);
   router.delete("/team", function sessions(req, res, next) {
     const uids = req.body.uids;
     const orgId = req.body.orgId;
-    Promise.all([
-      LoginRadiusSDK.roleApi.deleteRolesFromRoleContextByUid
-      .delete(uids, orgId),
-      LoginRadiusSDK.organizationApi
-      .deleteTeamMember(orgId, {UId:[uids]})
-    ]).then(([deleteOrgMemeber, DeleteRoleContext])=>{
-      res.json(deleteOrgMemeber);
-    })
+    LoginRadiusSDK.organizationApi
+    .deleteTeamMember(orgId, {UId:[uids]}).then((deleteOrgMemeber)=>{
+      res.json(deleteOrgMemeber)
+    }).catch((e)=>{
+      res.json(e)
+    });
+//     Promise.all([
+//       LoginRadiusSDK.roleApi.deleteRoleContextByUid
+//       (orgId, uids),
+//       LoginRadiusSDK.organizationApi
+//       .deleteTeamMember(orgId, {UId:[uids]})
+//     ]).then(([deleteOrgMemeber, DeleteRoleContext])=>{
+//       res.json(deleteOrgMemeber);
+//     }).catch(([deleteOrgMemeberError, DeleteRoleContextError])=>{
+// console.log(deleteOrgMemeberError)
+// console.log(DeleteRoleContextError)
+//     })
   });
 
   router.get("/team", function sessions(req, res, next) {

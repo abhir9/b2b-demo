@@ -1,4 +1,4 @@
-import * as React from 'react';
+import  React, {useContext} from 'react';
 import {
   Paper,
   Table,
@@ -13,6 +13,7 @@ import {
   Typography,
   IconButton,
 } from '@material-ui/core';
+import UserContext  from './../LoginContext';
 import {
   Delete,
   Edit
@@ -44,12 +45,14 @@ export default function StickyHeadTable({showSection}) {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
- 
+  const {user} = useContext(UserContext);
   React.useEffect(() => {
+  
+
     if (!calledAPI) {
       setLoading(true);
      
-      fetch(`${API}/data`)
+      fetch(`${API}/data?orgid=`+user.organization)
         .then(response => response && response.json())
         .then(data => {
           setcalledAPI(true);
@@ -59,12 +62,12 @@ export default function StickyHeadTable({showSection}) {
               rows.push({
                 id: record.id, name: record.name, body: record.body, action:
                   <React.Fragment>
-                    <IconButton color="primary" aria-label="edit" component="span" onClick={()=>{
+                    <IconButton disabled={user.role.includes("Marketeer") || user.role.includes("Product Manager")} color="primary" aria-label="edit" component="span" onClick={()=>{
                       showSection(record);
                     }}>
                       <Edit fontSize="small" />
                     </IconButton>
-                    <IconButton color="primary" aria-label="edit" component="span" onClick={() => {
+                    <IconButton  disabled={user.role.includes("Marketeer") || user.role.includes("Product Manager")}  color="primary" aria-label="delete" component="span" onClick={() => {
                       setLoading(true);
                       fetchRequest("delete", "/data/"+record.id).then((data)=>{
                        

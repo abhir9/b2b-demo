@@ -43,7 +43,7 @@ function a11yProps(index) {
   };
 }
 export default function VerticalTabs() {
-  const [value, setValue] = React.useState(1);
+  const [value, setValue] = React.useState(0);
   const {user} = useContext(UserContext)
   const history = useHistory();
 

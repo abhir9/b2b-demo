@@ -117,11 +117,11 @@ class Login extends Component {
   render() {
     if(this.state.loading){
     return (
-      <div class="lr_fade lr-loading-screen-overlay" id="loading-spinner">
-      <div class="load-dot"></div>
-      <div class="load-dot"></div>
-      <div class="load-dot"></div>
-      <div class="load-dot"></div>
+      <div className="lr_fade lr-loading-screen-overlay" id="loading-spinner">
+      <div className="load-dot"></div>
+      <div className="load-dot"></div>
+      <div className="load-dot"></div>
+      <div className="load-dot"></div>
     </div>
     )
     }
@@ -141,19 +141,24 @@ class Login extends Component {
         </IconButton>
         <Menu
           anchorEl={menuAnchorEl}
-          anchorOrigin={menuPosition}
+        //  anchorOrigin={menuPosition}
           transformOrigin={menuPosition}
           open={!!menuAnchorEl}
           onClose={this.handleMenuClose}
         >
-          <MenuItem to="/profile">
+          <MenuItem onClick={()=>{
+            this.props.history.push("/profile");
+          }}>
             
-            <Button variant="text" component={Link} to="/profile">Profile</Button>
+            Profile
           </MenuItem>
-          <MenuItem to="/team">
+          <MenuItem onClick={()=>{
+            this.props.history.push("/team");
+          }}>
             
-            <Button variant="text" component={Link} to="/team">Team</Button>
+            Team
           </MenuItem>
+         
           <MenuItem onClick={this.logout}>
             <ListItemText
               primary="Logout"

@@ -1,38 +1,39 @@
-import React, {useContext} from 'react';
+import React, { useContext, Component } from 'react';
 import {
-    Paper,
-    Table,
-    TableBody,
-    TableContainer,
-    TablePagination,
-    TableRow,
-    TableHead,
-    TableCell,
-    Button,
-    MenuItem,
-    TextField,
-    Box,
-    CircularProgress
-    } from '@material-ui/core';
-    import {fetchRequest} from "../../utils";
-    import UserContext  from './../LoginContext';
-    import {apiEndpoint} from "../../config";
-    import {
-      Snackbar,
-      IconButton
-      } from '@material-ui/core';
-      import {
-        Close
-        } from '@material-ui/icons';
+  Paper,
+  Table,
+  TableBody,
+  TableContainer,
+  TablePagination,
+  TableRow,
+  TableHead,
+  TableCell,
+  Button,
+  MenuItem,
+  TextField,
+  Box,
+  CircularProgress,
+  Typography
+} from '@material-ui/core';
+import { fetchRequest } from "../../utils";
+import UserContext from './../LoginContext';
+import { apiEndpoint } from "../../config";
+import {
+  Snackbar,
+  IconButton
+} from '@material-ui/core';
+
+import {
+  Close,
+  Delete,
+  Edit
+} from '@material-ui/icons';
 const columns = [
   { id: 'email', label: 'Email' },
   { id: 'role', label: 'Role' },
-  {id:'action', label:'Action'}
+  { id: 'action', label: 'Action' }
 ];
-
-const rows = [];
-
-
+//const rows = [];
 const currencies = [
   {
     value: 'Admin',
@@ -51,219 +52,337 @@ const currencies = [
     label: 'Product Manager',
   },
 ];
-export default function Team() {
-  const [page, setPage] = React.useState(0);
-  const [open, setOpen] = React.useState(false);
-  const [message, setMessage] = React.useState("");
-  const [role, setRole] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [addTeamMemebrBox, setAddTeamMemebrBox] = React.useState(false);
-  const {user} = useContext(UserContext)
-  const [rowUpdate, setRowUpdate] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+class Team extends React.Component {
+  state = {
+    loading: false,
+    page: 0,
+    role: "",
+    email: '',
+    open: false,
+    messge: "",
+    id: '',
+    rowsPerPage: 2,
+    addTeamMemebrBox: false,
+    rows: [],
+    updaterole:"",
+    editRole:""
   };
+  componentDidMount() {
+    this.getTeamMember();
+  }
+  static contextType = UserContext;
+  getTeamMember = () => {
+    const { user, setUser } = this.context;
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
 
-  const handleChange = (e) => {
-    if(e.target.value){
-      setRole(e.target.value.trim());
-    }
-  };
-  const getTeamMember =  () =>{
-    setLoading(true);
-    fetch(`${apiEndpoint}/team?name=`+ "61666857e8e9a9f8be4b1888")
-    .then(response => response && response.json())
-    .then(data => {
-      try{
-        if(data.Data.length){
-          data.Data.map((record)=>{
-            if(record){
-      rows.push({email:record.Email[0].Value,role:record.RoleContext.Roles})
+    this.setState({ loading: true, rows: [] }, () => {
+      fetch(`${apiEndpoint}/team?name=` + user.organization)
+        .then(response => response && response.json())
+        .then(data => {
+          try {
+            const { rows } = this.state;
+            this.setState({ loading: false });
+            if (data.Data.length) {
+              data.Data.map((record) => {
+                if (record) {
+                  rows.push({
+                    email: record.Email[0].Value, role: record.RoleContext.Roles, uid: record.Uid
+                  });
+
+                }
+              })
+              this.setState({ rows: rows })
             }
-          })
-        }
-        setLoading(false);
-      }
-      catch(e){}
+
+          }
+          catch (e) {
+
+            this.setState({ loading: false });
+          }
+        });
     });
 
+
   }
-  const addteammember = async () =>{
-  let teamMember =  await fetchRequest("post", "/team", {email:email,ownerid:user.organization,roles:[role]});
-  if(teamMember.ErrorCode){
-    setOpen(true)
-    setMessage("User is alreday mapped with the organization.");
-    
-  }
-  else {
-    setOpen(true)
-    setMessage("User is added sucessfully to this organization.")
-  }
-  getTeamMember();
-  }
-  React.useEffect(() => {
-    if(rows.length === 0){
-      getTeamMember();
+  addteammember = async () => {
+    const { user } = this.context;
+    const { email, role } = this.state;
+    let teamMember = await fetchRequest("post", "/team", { email: email, ownerid: user.organization, roles: [role] });
+    if (teamMember.ErrorCode) {
+
+      this.setState({ addTeamMemebrBox: false, email: "", role: "", open: true, message: "User is alreday mapped with the organization." });
+
     }
-  },[rows, rowUpdate])
-  return (
-    <React.Fragment>
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-       <Snackbar
-  anchorOrigin={{ vertical: 'top', horizontal: 'right'}}
-  open={open}
-  onClose={()=>{
-    setOpen(false)
-  }}
-  message={message}
- // key={vertical + horizontal}
- action={
-  <React.Fragment>
-    <IconButton
-      aria-label="close"
-      color="inherit"
-      sx={{ p: 0.5 }}
-      onClick={()=>{
-        setOpen(false)
-      }}
-    >
-      <Close />
-    </IconButton>
-  </React.Fragment>
-}
-/>
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-          
-              {rows.length ? (
-rows
-.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-.map((row) => {
-  return (
-    <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-      {columns.map((column) => {
-        const value = row[column.id];
-        return (
-          <TableCell key={column.id} align={column.align}>
-            {column.format && typeof value === 'number'
-              ? column.format(value)
-              : value}
-          </TableCell>
-        );
-      })}
-    </TableRow>
-  );
-})
-
-              ): <TableRow>
-              <TableCell colSpan={6}>{loading ?<Box sx={{ display: 'flex' }}> <CircularProgress /> </Box>
- :"No Record Found"}</TableCell>
-            </TableRow> }
-          </TableBody>
-        </Table>
-      </TableContainer>
-      {rows.length ?
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        SelectProps={{
-            inputProps: {
-              'aria-label': '',
-            },
-            native: true,
-          }}
-      />:""}
-
-
-
+    else {
+      this.setState({ addTeamMemebrBox: false, email: "", role: "", open: true, message: "User is added sucessfully to this organization" });
+      this.getTeamMember();
+    }
     
-
-    </Paper>
-
-<Button
-color="secondary"
-onClick={()=>{
- setAddTeamMemebrBox(!addTeamMemebrBox);
-}}
-variant="contained"
->
-Add Team Member
-</Button>
-  {addTeamMemebrBox && <Box
-    component="form"
-    sx={{
-      '& .MuiTextField-root': { m: 1, width: '100%', margin: '3px' },
-    }}
-    noValidate
-    autoComplete="off"
-  >
-  <TextField id="outlined-basic" label="Email" variant="outlined" onChange={(e)=>{
-  if(e.target.value){
-    setEmail(e.target.value.trim());
   }
-  }}/>
-  <TextField variant="outlined"
-            id="outlined-select-currency"
-            select
-            label="Select"
-            value={role}
-            onChange={handleChange}
-            helperText="Please select your role"
-          >
-            {currencies.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-              
-             <Button
+   
+   updateteamrole = async (uid) => {
+    const { user } = this.context;
+    const { updaterole } = this.state;
+    let updateRole = await fetchRequest("put", "/role", { uid: uid, ownerid: user.organization, roles: [updaterole] });
+    if (updateRole.ErrorCode) {
+
+      this.setState({ updaterole: "", editRole: "", message: "Unable to update role for this user." });
+
+    }
+    else {
+      this.setState({ updaterole: "", editRole: "", message: "Role has updated sucessfully." });
+      this.getTeamMember();
+    }
+    
+  }
+
+
+  render() {
+    const { editRole, rows, loading, updaterole, role, addTeamMemebrBox, open, message, rowsPerPage, page } = this.state;
+    const { user } = this.context;
+
+    return (
+      <React.Fragment>
+        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+          <Snackbar
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            open={open}
+            onClose={() => {
+              this.setState({ open: false })
+            }}
+            message={message}
+            // key={vertical + horizontal}
+            action={
+              <React.Fragment>
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  sx={{ p: 0.5 }}
+                  onClick={() => {
+
+                    this.setState({ open: false })
+                  }}
+                >
+                  <Close />
+                </IconButton>
+              </React.Fragment>
+            }
+          />
+          <TableContainer sx={{ maxHeight: 440 }}>
+            <Table stickyHeader aria-label="sticky table" style={loading? {overflow: 'hidden'}:{}}>
+              <TableHead>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.id}
+                      align={column.align}
+                      style={{ minWidth: column.minWidth }}
+                    >
+                      {column.label}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+
+                {loading ? <Box sx={{ display: 'flex' }}> <CircularProgress /> </Box> : rows.length ? (
+                  rows
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row) => {
+                      return (
+                        <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                          {columns.map((column) => {
+                            const value = row[column.id];
+                            return (
+                              <React.Fragment>
+                                {column.id === "email" && <TableCell key={column.id} align={column.align}>
+                                  {value} 
+                                </TableCell>}
+                                {column.id === "role" && <TableCell key={column.id} align={column.align}>
+                                  {editRole && editRole === row["uid"]? 
+                                    <React.Fragment>    <TextField variant="outlined"
+                                        id="outlined-select-currency"
+                                        select
+                                        label="Select"
+                                        value={updaterole || row['role']}
+                                        onChange={(e) => {
+                                          this.setState({ updaterole: e.target.value.trim() })
+                                        }}
+                                        helperText="Please select your role"
+                                      >
+                                        {currencies.map((option) => (
+                                          <MenuItem key={option.value} value={option.value}>
+                                            {option.label}
+                                          </MenuItem>
+                                        ))}
+                                      </TextField>
+                                      <Button
+                color="secondary"
+                onClick={() => {
+                  this.updateteamrole(row['uid'])
+                }}
+                variant="contained"
+              >
+                Save
+              </Button>
+              <Button
+                style={{ marginLeft: '5px' }}
+                onClick={() => {
+                  this.setState({editRole:""})
+                }}
+                variant="contained"
+              >
+                Cancel
+              </Button>
+                        </React.Fragment>
+                                  : value}
+                                </TableCell>}
+
+                                {column.id === "action" && <TableCell key={column.id} align={column.align}>
+                                  <React.Fragment>
+                                    {row['role'] && row['role'].includes("Owner") ? "" :
+                                      <div>
+                                        <IconButton  disabled={user.role.includes("Marketeer") || user.role.includes("Developer")} color="primary" aria-label="edit role" component="span" onClick={() => {
+                                          // showSection(record);
+                                          this.setState({editRole:row["uid"]})
+                                        }}>
+                                          <Edit fontSize="small" />
+                                        </IconButton>
+                                        <IconButton disabled={user.role.includes("Marketeer") || user.role.includes("Developer")} color="primary" aria-label="delete" component="span" onClick={() => {
+                                          //  setLoading(true);
+                                          this.setState({ loading: true })
+                                         const deleteMemeber =  fetchRequest("delete", "/team", { orgId: user.organization, uids: row['uid'] }).then((data) => {
+                                          this.setState({ loading: false })
+                                          if(!deleteMemeber.ErrorCode){
+                                            this.setState({open:true, message:"user is deleted successfully."})
+                                          }
+                                            
+                                          });
+                                        }}>
+                                          <Delete fontSize="small" />
+                                        </IconButton>
+                                      </div>}
+                                  </React.Fragment>
+                                </TableCell>}
+                              </React.Fragment>
+                            );
+                          })}
+                        </TableRow>
+                      );
+                    })
+
+                ) : <TableRow>
+                  <TableCell colSpan={6}>{loading ? <Box sx={{ display: 'flex' }}> <CircularProgress /> </Box>
+                    : "No Record Found"}</TableCell>
+                </TableRow>}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          {rows.length ?
+            <TablePagination
+              rowsPerPageOptions={[2, 5, 10]}
+              component="div"
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={(e, newPage) => {
+                this.setState({ page: newPage })
+              }}
+              onRowsPerPageChange={(event) => {
+                this.setState({ page: 0, rowsPerPage: +event.target.value })
+              }}
+              SelectProps={{
+                inputProps: {
+                  'aria-label': '',
+                },
+                native: true,
+              }}
+            /> : ""}
+
+
+
+
+
+        </Paper>
+
+        {!addTeamMemebrBox && <Button
           color="secondary"
-          disabled={user.role && !user.role.includes("Owner")}
-          onClick={()=>{
-            addteammember();
+          onClick={() => {
+
+            this.setState({ addTeamMemebrBox: true, email: "", role: "" })
           }}
+          disabled={user.role.includes("Marketeer") || user.role.includes("Developer")}
           variant="contained"
+          style={{ "margin": '5px' }}
         >
-          Add
+          Add Team Member
         </Button>
-        <Button
-        
-          onClick={()=>{
-            setAddTeamMemebrBox(false);
-          }}
-          variant="contained"
-        >
-          Cancel
-        </Button>
-  
-  </Box>}
-  </React.Fragment>
-  );
+        }
+        {addTeamMemebrBox &&
+          <div style={{ width: '50%' }}>
+            <Box
+              component="form"
+              sx={{
+                '& .MuiTextField-root': { m: 1, width: '100%', margin: '3px' },
+                mt: 5
+              }}
+              noValidate
+              autoComplete="off"
+            >
+              <Typography>Add New Team memeber to your Organization</Typography>
+              <TextField id="outlined-basic" label="Email" variant="outlined" onChange={(e) => {
+                if (e.target.value) {
+
+                  this.setState({ email: e.target.value.trim() })
+                }
+              }} />
+              <TextField variant="outlined"
+                id="outlined-select-currency"
+                select
+                label="Select"
+                value={role}
+                onChange={(e) => {
+                  this.setState({ role: e.target.value.trim() })
+                }}
+                helperText="Please select your role"
+              >
+                {currencies.map((option) => {
+                  if(!user.role.includes(option.value)){
+                  return <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                  }
+                })}
+              </TextField>
+
+              <Button
+                color="secondary"
+                disabled={user.role && !user.role.includes("Owner")}
+                onClick={() => {
+                  this.addteammember();
+                }}
+                variant="contained"
+              >
+                Add
+              </Button>
+              <Button
+                style={{ marginLeft: '15px' }}
+                onClick={() => {
+                  this.setState({ addTeamMemebrBox: false });
+                }}
+                variant="contained"
+              >
+                Cancel
+              </Button>
+
+            </Box>
+          </div>
+        }
+      </React.Fragment>
+
+
+    );
+  }
 }
+
+export default Team;

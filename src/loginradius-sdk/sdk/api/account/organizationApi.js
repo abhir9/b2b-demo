@@ -55,9 +55,6 @@ module.exports = function (config) {
     };
 
     module.deleteTeamMember = function (orgId, deleteUidModel) {
-      if (helper.isNullOrWhiteSpace(uids)) {
-        return Promise.reject(helper.getValidationMessage('uids'));
-      }
       var queryParameters = {};
   
       queryParameters.apiKey = config.apiKey;

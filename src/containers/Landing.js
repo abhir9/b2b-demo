@@ -11,7 +11,7 @@ import {
   const link =  idxDomain + '?action=register&return_url='+ window.location.origin + "/login";
 export default () => (
   <div>
-  <Typography  align="center" variant="div">
+  <Typography  align="center" variant="body1">
     Build Buyer Persons from your customer Data and AI make it bloody too much eay to understand
     </Typography>
   <Button variant="contained" component={Link} onClick={()=>{

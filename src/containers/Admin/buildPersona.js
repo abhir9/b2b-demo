@@ -13,11 +13,9 @@ import {
   Close
 } from '@material-ui/icons';
 import {
-  Link,
-  useHistory,
-  RouteComponentProps,
   withRouter,
 } from "react-router-dom";
+import UserContext from './../LoginContext';
 const API = process.env.REACT_APP_API || 'http://localhost:3072';
 
 class BuildPersona extends Component {
@@ -29,6 +27,7 @@ class BuildPersona extends Component {
     messge: "",
     id:''
   };
+  static contextType = UserContext;
 componentDidMount(){
   const {
     history,
@@ -64,12 +63,14 @@ componentDidMount(){
     }
   }
   saveData = async () => {
+    const { user } = this.context;
     this.setState({ loading: true })
     var method = this.state.id?"put":"post";
     var endpoint = method === "put" ? '/data/'+ this.state.id : '/data';
     var response = await this.fetch(method, endpoint, {
       name: this.state.name,
-      body: this.state.body
+      body: this.state.body,
+      orgid: user.organization
     });
     if (response.id) {
       var message = method === "put" ? "Build Persona query has updated successfully" :"Build Persona query has created successfully." ;
@@ -83,10 +84,11 @@ componentDidMount(){
     this.setState({ loading: false, data: (await this.fetch('get', '/data')) || [] });
   }
   render() {
+    const { user } = this.context;
     const { loading, name, body } = this.state;
   
     return (
-      <div>
+      <div >
         <Typography>Build Persona</Typography>
         <Box
           component="form"
@@ -111,7 +113,7 @@ componentDidMount(){
             onClick={() => {
               this.saveData();
             }}
-            disabled={loading}
+            disabled={loading || user.role.includes("Marketeer") || user.role.includes("Product Manager")}
             variant="contained"
           >
             {loading ? <CircularProgress /> : "Build"}

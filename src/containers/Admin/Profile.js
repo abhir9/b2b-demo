@@ -23,7 +23,7 @@ import React, { useContext } from 'react';
         <Typography variant="h5" component="div">
          Personal Details
         </Typography>
-        <Grid container spacing={2}>
+        {/* <Grid container spacing={2}>
   <Grid item xs={2}>
   <Typography sx={{ mb: 1.5 }} color="text.secondary">
           Name : 
@@ -34,7 +34,7 @@ import React, { useContext } from 'react';
           {user.name}
         </Typography>
   </Grid>
-</Grid>
+</Grid> */}
 <Grid container spacing={2}>   
 <Grid item xs={2}>
   <Typography sx={{ mb: 1.5 }} color="text.secondary">

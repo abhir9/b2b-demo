@@ -16,17 +16,19 @@ app.use(bodyParser.json());
 
 const database = new Sequelize({
   dialect: 'sqlite',
-  storage: './test.sqlite',
+  storage: './tests.sqlite',
 });
 
 const Post = database.define('data', {
   name: Sequelize.STRING,
   body: Sequelize.TEXT,
+  orgid:Sequelize.STRING
 });
 
 const connectData = database.define('connectData', {
   type: Sequelize.STRING,
   body: Sequelize.TEXT,
+  orgid:Sequelize.STRING
 });
 
 finale.initialize({ app, sequelize: database });
@@ -34,10 +36,16 @@ finale.initialize({ app, sequelize: database });
 finale.resource({
   model: Post,
   endpoints: ['/data', '/data/:id'],
+  search: [
+    {operator: Sequelize.Op.eq, param: 'orgid', attributes: [ 'orgid' ]},
+  ] 
 });
 finale.resource({
   model: connectData,
   endpoints: ['/connectdata', '/connectdata/:id'],
+  search: [
+    {operator: Sequelize.Op.eq, param: 'orgid', attributes: [ 'orgid' ]},
+  ]
 });
 
 app.use("/", require("./routes"));
