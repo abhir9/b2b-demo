@@ -1,5 +1,6 @@
-import * as React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
+import { useHistory, useLocation, Link } from "react-router-dom";
 import {
   Typography,
   Box,
@@ -9,6 +10,7 @@ import {
 import ConnectData from './connectData';
 import YourPersona from './yourPersona';
 import BuildPersona from './buildPersona';
+import UserContext  from './../LoginContext';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -40,15 +42,17 @@ function a11yProps(index) {
     'aria-controls': `vertical-tabpanel-${index}`,
   };
 }
-
 export default function VerticalTabs() {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(1);
+  const {user} = useContext(UserContext)
+  const history = useHistory();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
+ // alert(value)
   return (
+    
     <Box
       sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 500 }}
     >
@@ -68,7 +72,17 @@ export default function VerticalTabs() {
         <BuildPersona />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <YourPersona />
+        <YourPersona showSection={(data)=>{
+          history.push(
+            `/dashboard`,
+            {
+              persona: data,
+            }
+          );
+          setValue(0)
+          handleChange(null, 0)
+        }}/>
+        
       </TabPanel>
       <TabPanel value={value} index={2}>
       <ConnectData />
