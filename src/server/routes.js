@@ -26,19 +26,19 @@ res.json(response);
       }
       else {
         if(domain){
-          LoginRadiusSDK.accountApi
-          .updateAccountByUid({
-            CustomFields: {
-              employee: req.body.employee ? req.body.employee : "",
-              role: req.body.role ? req.body.role : "",
-              organization: req.body.organization ? req.body.organization : "",
-            }
-          }, userProfile.Uid);
           LoginRadiusSDK.organizationApi
       .createOrganizationByName({
         Name:domain, OwnerUid: userProfile.Uid
       })
       .then(function getOrganizationByName(response) {
+        LoginRadiusSDK.accountApi
+        .updateAccountByUid({
+          CustomFields: {
+            employee: req.body.employee ? req.body.employee : "",
+            role: req.body.role ? req.body.role : "",
+            organization: req.body.organization ? req.body.organization : "",
+          }
+        }, userProfile.Uid);
         if(response.Name){
         res.json({
           name:userProfile.FullName,
@@ -58,7 +58,8 @@ res.json(response);
           //userProfile.organization
           LoginRadiusSDK.roleApi.getRoleContextByUid(userProfile.Uid)
     .then(function getRoleContextByUid(response) {
-      var orgId = userProfile.Organizations ? userProfile.Organizations[0].Id : ""
+     // var orgId = userProfile.Organizations ? userProfile.Organizations[0].Id : ""
+     var orgId = response.Data ? response.Data[0].Context : "";
       if(response && response.Data.length && orgId){
         
         const roles =
@@ -95,8 +96,9 @@ res.json(response);
   router.post("/team", function sessions(req, res, next) {
     const email = req.body.email;
     const orgId = req.body.ownerid;
+    const loginUrl = req.body.loginUrl;
     LoginRadiusSDK.organizationApi
-      .createTeamMember({Email:email}, orgId)
+      .createTeamMember({Email:email}, orgId, loginUrl)
       .then(function createTeamMember(teamProfile) {
       if (!teamProfile) {
         throw new Error("Unable to create team member");
@@ -162,17 +164,6 @@ res.json(response);
     }).catch((e)=>{
       res.json(e)
     });
-//     Promise.all([
-//       LoginRadiusSDK.roleApi.deleteRoleContextByUid
-//       (orgId, uids),
-//       LoginRadiusSDK.organizationApi
-//       .deleteTeamMember(orgId, {UId:[uids]})
-//     ]).then(([deleteOrgMemeber, DeleteRoleContext])=>{
-//       res.json(deleteOrgMemeber);
-//     }).catch(([deleteOrgMemeberError, DeleteRoleContextError])=>{
-// console.log(deleteOrgMemeberError)
-// console.log(DeleteRoleContextError)
-//     })
   });
 
   router.get("/team", function sessions(req, res, next) {

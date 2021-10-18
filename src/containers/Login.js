@@ -86,7 +86,7 @@ class Login extends Component {
       localStorage.removeItem("isLoggedIn");
       localStorage.removeItem("x-token");
       this.setState({loading:false});
-      if(window.location.pathname !== "/"){
+      if(window.location.pathname && window.location.pathname !== "/"){
         this.logout();
       }
     }
@@ -148,12 +148,14 @@ class Login extends Component {
         >
           <MenuItem onClick={()=>{
             this.props.history.push("/profile");
+            this.handleMenuClose();
           }}>
             
             Profile
           </MenuItem>
           <MenuItem onClick={()=>{
             this.props.history.push("/team");
+            this.handleMenuClose();
           }}>
             
             Team

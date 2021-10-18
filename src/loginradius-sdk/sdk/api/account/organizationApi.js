@@ -20,7 +20,7 @@ module.exports = function (config) {
       return config.request('GET', resourcePath, queryParameters, null);
     };
 
-    module.createTeamMember = function (accountCreateModel, id, fields) {
+    module.createTeamMember = function (accountCreateModel, id, loginUrl, fields) {
       if (helper.checkJson(accountCreateModel)) {
         return Promise.reject(helper.getValidationMessage('memberModel'));
       }
@@ -33,6 +33,9 @@ module.exports = function (config) {
       queryParameters.apiSecret = config.apiSecret;
       if (!helper.isNullOrWhiteSpace(fields)) {
         queryParameters.fields = fields;
+      }
+      if (!helper.isNullOrWhiteSpace(loginUrl)) {
+        queryParameters.loginUrl = loginUrl;
       }
   
       var resourcePath = 'identity/v2/manage/organizations/' + id + '/members';

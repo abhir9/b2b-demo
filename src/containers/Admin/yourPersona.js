@@ -12,6 +12,7 @@ import {
   Box,
   Typography,
   IconButton,
+  Snackbar
 } from '@material-ui/core';
 import UserContext  from './../LoginContext';
 import {
@@ -19,7 +20,6 @@ import {
   Edit
 } from '@material-ui/icons';
 import { fetchRequest } from "../../utils";
-import { useHistory, useLocation, Link } from "react-router-dom";
 const columns = [
   { id: 'name', label: 'Name' },
   { id: 'body', label: 'Critieira' },
@@ -35,8 +35,7 @@ export default function StickyHeadTable({showSection}) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [loading, setLoading] = React.useState(false);
   const [calledAPI, setcalledAPI] = React.useState(false);
-  const location = useLocation();
-  const history = useHistory();
+ 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -62,19 +61,17 @@ export default function StickyHeadTable({showSection}) {
               rows.push({
                 id: record.id, name: record.name, body: record.body, action:
                   <React.Fragment>
-                    <IconButton disabled={user.role.includes("Marketeer") || user.role.includes("Product Manager")} color="primary" aria-label="edit" component="span" onClick={()=>{
+                    <IconButton disabled={user.role.includes("Marketeer") || user.role.includes("Developer")} color="primary" aria-label="edit" component="span" onClick={()=>{
                       showSection(record);
                     }}>
                       <Edit fontSize="small" />
                     </IconButton>
-                    <IconButton  disabled={user.role.includes("Marketeer") || user.role.includes("Product Manager")}  color="primary" aria-label="delete" component="span" onClick={() => {
+                    <IconButton  disabled={user.role.includes("Marketeer") || user.role.includes("Developer")}  color="primary" aria-label="delete" component="span" onClick={() => {
                       setLoading(true);
                       fetchRequest("delete", "/data/"+record.id).then((data)=>{
                        
                         if(!data.errors){
-                          rows =  rows.filter((persona)=>persona.id !== record.id);
-                        
-                           
+                          rows =  rows.filter((persona)=>persona.id !== record.id);   
                         }
                         setLoading(false);
                       });

@@ -65,7 +65,7 @@ class ConnectData extends Component {
   }
   render() {
     const { user } = this.context;
-    const { loading } = this.state;
+    const { loading, type, body } = this.state;
     return (
       <div>
         <Typography>Connect Data</Typography>
@@ -77,17 +77,17 @@ class ConnectData extends Component {
           noValidate
           autoComplete="off"
         >
-          <TextField id="outlined-basic" label="Connection Type" variant="outlined" onChange={(e) => {
+          <TextField id="outlined-basic" value={type}  label="Connection Type" variant="outlined" onChange={(e) => {
             this.setState({ type: e.target.value.trim() })
           }} />
-          <TextField label="Connection String" variant="outlined"
+          <TextField label="Connection String" variant="outlined" value={body}
             multiline
             rows={4} onChange={(e) => {
               this.setState({ body: e.target.value.trim() })
             }} />
 
           <Button
-            color="secondary"
+           color="primary"
             onClick={() => {
               this.saveData();
             }}

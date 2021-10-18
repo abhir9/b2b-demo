@@ -194,7 +194,7 @@ class Team extends React.Component {
                           {columns.map((column) => {
                             const value = row[column.id];
                             return (
-                              <React.Fragment>
+                              <React.Fragment key={column.id}>
                                 {column.id === "email" && <TableCell key={column.id} align={column.align}>
                                   {value} 
                                 </TableCell>}
@@ -216,8 +216,9 @@ class Team extends React.Component {
                                           </MenuItem>
                                         ))}
                                       </TextField>
+                                      <div style={{marginTop:"24px"}}></div>
                                       <Button
-                color="secondary"
+               color="primary"
                 onClick={() => {
                   this.updateteamrole(row['uid'])
                 }}
@@ -242,19 +243,22 @@ class Team extends React.Component {
                                   <React.Fragment>
                                     {row['role'] && row['role'].includes("Owner") ? "" :
                                       <div>
-                                        <IconButton  disabled={user.role.includes("Marketeer") || user.role.includes("Developer")} color="primary" aria-label="edit role" component="span" onClick={() => {
+                                        <IconButton  disabled={user.role.includes("Product Manager") || user.role.includes("Marketeer") || user.role.includes("Developer")} color="primary" aria-label="edit role" component="span" onClick={() => {
                                           // showSection(record);
                                           this.setState({editRole:row["uid"]})
                                         }}>
                                           <Edit fontSize="small" />
                                         </IconButton>
-                                        <IconButton disabled={user.role.includes("Marketeer") || user.role.includes("Developer")} color="primary" aria-label="delete" component="span" onClick={() => {
+                                        <IconButton disabled={user.role.includes("Product Manager") || user.role.includes("Marketeer") || user.role.includes("Developer")} color="primary" aria-label="delete" component="span" onClick={() => {
                                           //  setLoading(true);
                                           this.setState({ loading: true })
                                          const deleteMemeber =  fetchRequest("delete", "/team", { orgId: user.organization, uids: row['uid'] }).then((data) => {
                                           this.setState({ loading: false })
                                           if(!deleteMemeber.ErrorCode){
-                                            this.setState({open:true, message:"user is deleted successfully."})
+                                            var _rows =  rows.filter((team)=>team.uid !== row['uid']);
+                                            
+                                            this.setState({rows:_rows, open:true, message:"user is deleted successfully."});
+
                                           }
                                             
                                           });
@@ -306,12 +310,12 @@ class Team extends React.Component {
         </Paper>
 
         {!addTeamMemebrBox && <Button
-          color="secondary"
+          color="primary"
           onClick={() => {
 
             this.setState({ addTeamMemebrBox: true, email: "", role: "" })
           }}
-          disabled={user.role.includes("Marketeer") || user.role.includes("Developer")}
+          disabled={user.role.includes("Admin") || user.role.includes("Product Manager") || user.role.includes("Marketeer") || user.role.includes("Developer")}
           variant="contained"
           style={{ "margin": '5px' }}
         >
@@ -356,7 +360,7 @@ class Team extends React.Component {
               </TextField>
 
               <Button
-                color="secondary"
+               color="primary"
                 disabled={user.role && !user.role.includes("Owner")}
                 onClick={() => {
                   this.addteammember();

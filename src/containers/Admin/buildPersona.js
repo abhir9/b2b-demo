@@ -74,7 +74,8 @@ componentDidMount(){
     });
     if (response.id) {
       var message = method === "put" ? "Build Persona query has updated successfully" :"Build Persona query has created successfully." ;
-      this.setState({ loading: false, id:"", name: "", body: "", open: true, message: message})
+      this.setState({ loading: false, id:"", name: "", body: "", open: true, message: message});
+      this.props.showSection();
     }
     else {
       this.setState({ loading: false, open: true, message: "Build Persona query is not created." })
@@ -109,11 +110,11 @@ componentDidMount(){
             }} />
 
           <Button
-            color="secondary"
+           color="primary"
             onClick={() => {
               this.saveData();
             }}
-            disabled={loading || user.role.includes("Marketeer") || user.role.includes("Product Manager")}
+            disabled={loading  || user.role.includes("Marketeer") || user.role.includes("Developer")}
             variant="contained"
           >
             {loading ? <CircularProgress /> : "Build"}

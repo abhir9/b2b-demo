@@ -5,8 +5,13 @@ import {
   Typography,
   Box,
   Tab,
-  Tabs
+  Tabs,
+  Snackbar,
+  IconButton
 } from '@material-ui/core';
+import {
+  Close
+} from '@material-ui/icons';
 import ConnectData from './connectData';
 import YourPersona from './yourPersona';
 import BuildPersona from './buildPersona';
@@ -46,13 +51,14 @@ export default function VerticalTabs() {
   const [value, setValue] = React.useState(0);
   const {user} = useContext(UserContext)
   const history = useHistory();
+  const [message, setMessage] = React.useState("");
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
  // alert(value)
   return (
-    
+    <React.Fragment>
     <Box
       sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 500 }}
     >
@@ -69,7 +75,11 @@ export default function VerticalTabs() {
         <Tab label="Connect Data" {...a11yProps(2)} />
       </Tabs>
       <TabPanel value={value} index={0}>
-        <BuildPersona />
+        <BuildPersona showSection = {()=>{
+          setValue(1)
+          handleChange(null, 1);
+          setMessage("Build Persona query has updated successfully");
+        }}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
         <YourPersona showSection={(data)=>{
@@ -88,5 +98,30 @@ export default function VerticalTabs() {
       <ConnectData />
       </TabPanel>
     </Box>
+  
+  <Snackbar
+  anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+  open={message !== ""}
+  onClose={() => {
+   setMessage("");
+  }}
+  message={message}
+  // key={vertical + horizontal}
+  action={
+    <React.Fragment>
+      <IconButton
+        aria-label="close"
+        color="inherit"
+        sx={{ p: 0.5 }}
+        onClick={() => {
+          setMessage("");
+        }}
+      >
+        <Close />
+      </IconButton>
+    </React.Fragment>
+  }
+/>
+</React.Fragment>
   );
 }

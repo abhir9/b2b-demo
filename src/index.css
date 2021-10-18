@@ -92,3 +92,26 @@ code {
     transform: translatey(-5px);
   }
 }
+.box-wrap {
+  display: flex;
+  justify-content: space-between;
+  max-width: 767px;
+  margin: 48px auto 0;
+}
+.box-wrap .box {
+  width: 33%;
+  margin-right: 32px;
+}
+.box-wrap .box:last-child {
+  margin-right: 0;
+}
+.box-wrap .box .icon {
+  background-color: #ccc;
+  width: 100%;
+  height: 172px;
+  margin-bottom: 12px;
+}
+.box-wrap .box .title {
+  font-weight: 500;
+  font-size: 18px;
+}
