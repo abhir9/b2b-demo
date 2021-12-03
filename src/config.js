@@ -9,3 +9,5 @@ config.apiSecret =  process.env.secret || "57265328-9777-4fe9-b33d-fc6762feb260"
 config.idxDomain = 'https://b2b-demo.devhub.lrinternal.com/auth';
 config.apiEndpoint = 'https://b2blrdemo.herokuapp.com';
 module.exports = config;
+
+
