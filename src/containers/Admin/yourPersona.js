@@ -25,8 +25,8 @@ const columns = [
   { id: 'body', label: 'Critieira' },
   { id: 'action', label: 'Action' }
 ];
-const API = process.env.REACT_APP_API || 'http://localhost:3072';
-
+import { apiEndpoint } from "../../config";
+const API = apiEndpoint;
 
 var rows = [];
 
