@@ -50,7 +50,7 @@ finale.resource({
 
 app.use("/", require("./routes"));
 
-const port = process.env.SERVER_PORT || 3072;
+const port = process.env.PORT || 3000;
 
 database.sync().then(() => {
   app.listen(port, () => {
