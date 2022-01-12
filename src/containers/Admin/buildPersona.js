@@ -16,7 +16,8 @@ import {
   withRouter,
 } from "react-router-dom";
 import UserContext from './../LoginContext';
-const API = process.env.REACT_APP_API || 'http://localhost:3072';
+import { apiEndpoint } from "../../config";
+const API = apiEndpoint;
 
 class BuildPersona extends Component {
   state = {
