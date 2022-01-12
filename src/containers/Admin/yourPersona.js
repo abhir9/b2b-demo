@@ -20,14 +20,14 @@ import {
   Edit
 } from '@material-ui/icons';
 import { fetchRequest } from "../../utils";
+import { apiEndpoint } from "../../config";
 const columns = [
   { id: 'name', label: 'Name' },
   { id: 'body', label: 'Critieira' },
   { id: 'action', label: 'Action' }
 ];
-import { apiEndpoint } from "../../config";
-const API = apiEndpoint;
 
+const API = apiEndpoint;
 var rows = [];
 
 export default function StickyHeadTable({showSection}) {
