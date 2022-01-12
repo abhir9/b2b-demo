@@ -1,12 +1,12 @@
 
 
 var config = {};
-config.environment = process.env.Env || "dev"; // Possible values are: 'dev', 'stag' and 'prod'.
+config.environment = process.env.Env || "prod"; // Possible values are: 'dev', 'stag' and 'prod'.
 config.port = process.env.Port || "3001";
-config.apiDomain = process.env.apiDomain || "devapi.lrinternal.com";
-config.apiKey = process.env.key || "5476ffe6-6f76-4897-b597-b339ac57ea79";
-config.apiSecret =  process.env.secret || "57265328-9777-4fe9-b33d-fc6762feb260";
-config.idxDomain = 'https://b2b-demo.devhub.lrinternal.com/auth';
+config.apiDomain = process.env.apiDomain || "api.loginradius.com";
+config.apiKey = process.env.key || "c155b144-f103-4007-bcf0-932cbbf9f2f0";
+config.apiSecret =  process.env.secret || "b54f27db-9c67-41e5-94a8-6c6dd8ee66f2";
+config.idxDomain = 'https://b2b-demo.hub.loginradius.com/auth';
 config.apiEndpoint = 'https://b2blrdemo.herokuapp.com';
 module.exports = config;
 
