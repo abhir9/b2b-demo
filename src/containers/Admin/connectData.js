@@ -13,7 +13,8 @@ import {
   Close
 } from '@material-ui/icons';
 import UserContext from './../LoginContext';
-const API = process.env.REACT_APP_API || 'http://localhost:3072';
+import { apiEndpoint } from "../../config";
+const API = apiEndpoint;
 
 class ConnectData extends Component {
   state = {
